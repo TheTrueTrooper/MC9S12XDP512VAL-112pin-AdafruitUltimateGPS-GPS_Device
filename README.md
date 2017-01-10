@@ -3,7 +3,7 @@ A GPS Device
 
 I and one other team member created a GPS consuming device. This device's creation involved hardware, software techincal writing, and a presentation to industry. 
 
-Hardware was a MC9S12XDP512VAL 112pin Micro Board with a Adafruit Ultimate GPS Break out and a Fona Cell Breakout. Both Break outs were interfaced with the Micro as the main computer.
+Hardware was a MC9S12XDP512VAL 112pin Micro Board with a Adafruit Ultimate GPS Break out and a Fona Cell Breakout. Both breakouts were interfaced with the Micro as the main computer.
 
 Software was written in C. I could calculate direction and distance between points on the globe using longitude and latitude.
 
