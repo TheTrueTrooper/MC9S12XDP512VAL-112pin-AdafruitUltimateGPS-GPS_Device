@@ -1,5 +1,5 @@
 # MC9S12XDP512VAL-112pin-AdafruitUltimateGPS-GPS_Device
-A GPS Device
+A GPS Device I worked on for my capstone.
 
 I and one other team member created a GPS consuming device. This device's creation involved hardware, software techincal writing, and a presentation to industry. 
 
