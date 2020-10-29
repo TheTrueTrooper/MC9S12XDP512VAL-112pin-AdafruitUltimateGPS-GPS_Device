@@ -21,12 +21,13 @@
 #include "DirtyDelays.h"
 #include "LED.h"
 
+// A function to ready all ports for use with the GPS and configure GPS
 void GPSInIt(void);
-
+//Gets a Full GPS GPPA (lat & long GPS Protocol) sentence from the the serial port
 void GPSGetSentence(char* SringOut, byte* outSize);
-
+//Enables GPS by powering on at enable pin.
 void GPSEnable(); 
-
+//Disables GPS by Powering off at enable pin
 void GPSDisable();
-
+//Sends a Command to GPS
 void GPSSendCommand(char* String);
