@@ -7,39 +7,48 @@
 //Spliter : the single char (uses '' not "") to split on
 char* ReadSection(char* Data, byte* OutStart, char Spliter) 
 { 
-      
+      // looks for fist start space
       int i = 0;
+      //start a string
       char* StringOut = NULL;
+      // Gets size of the data
       while (Data[*OutStart + i]!= 0x00 && Data[*OutStart + i]!= '\0' && Data[*OutStart + i] != Spliter)
       {
          i++;
       }
       
-     
+      //alocate a new string with a extra spot for null termator
       StringOut = (char*)malloc(i + 1); // thanks to herb for showing me aloting data
       i = 0;
+      //load all data into the new string
       while (Data[*OutStart + i]!= 0x00 && Data[*OutStart + i]!= '\0' && Data[*OutStart + i] != Spliter) 
       {
          StringOut[i] = Data[*OutStart + i]; 
          i++;
       }
-      StringOut[i] = '\0';       
+      //null terminate the string
+      StringOut[i] = '\0';    
+      //set us ready for the read on the next section by moving one
       *OutStart += i + 1;
       return StringOut; 
 }
 
+//Gets the actuall GPPA string from the full data string removing all unessarry bits
 char* FindGPSString(char* Data, byte* OutStart) 
 { 
       
       int i = 0;
       int j = 0;
       char* StringOut = NULL;
+      //find the start of the string
       while (Data[*OutStart + j] != '$' && Data[*OutStart + j + 1] != 'G')
       {
          j++;
+            //if for some reason we have a null we failled on aqquiring a string so kill it and wait for next data
          if (Data[*OutStart + j] == '\0')
           return NULL;
       }
+      //look for the end of the data from the beinging of the string.
       i = j;
       while (Data[*OutStart + i] != '\r')
       {
@@ -48,9 +57,10 @@ char* FindGPSString(char* Data, byte* OutStart)
           return NULL;
       }
       
-     
-      StringOut = (char*)malloc(i - j + 1); // thanks to herb for showing me aloting data
+      //allocate some space for a string and give it one extra spot for a end of the string on a null termator
+      StringOut = (char*)malloc(i - j + 1); 
       i = 0;
+      //copy the data
       while(Data[*OutStart + i + j] != '\r') 
       {
          StringOut[i] = Data[*OutStart + i + j]; 
@@ -58,6 +68,7 @@ char* FindGPSString(char* Data, byte* OutStart)
          if (Data[*OutStart + i] == '\0')
           return NULL;
       }
+      //null termiate
       StringOut[i] = '\0';       
       *OutStart += i;
       return StringOut; 
@@ -69,9 +80,10 @@ char* FindGPSString(char* Data, byte* OutStart)
 //so here right a parser selector
 int GPSParse (char* Data, GPSDataType* DataOutr)
 {
+      //check the data type to find if it is the correct data type
   if((Data[0]=='$')&& (Data[1]=='G')&& (Data[2]=='P') && (Data[3]=='G') && (Data[4]== 'G') && (Data[5]=='A')) 
   {
-      (*DataOutr).type = 1;//GPGGA;
+      (*DataOutr).type = GPGGA;//GPGGA;
   }
   ///as many as we want for types
   // check for GPGGA
@@ -86,7 +98,7 @@ int GPSParse (char* Data, GPSDataType* DataOutr)
   } 
 
 }
-
+//Gets hex values from data
 byte ParseHex(char* IN) 
 {
       int Out = 0;
@@ -111,9 +123,9 @@ int ParseGPGGA(char* Data, GPSDataType* DataOut)
   
   char* ParsedData;
   char Check = (char)0;
-  
+      
+  //get check sum on all of the data
   i = 1;
-  
   while(Data[i] != '*')
   {
        Check ^= Data[i];
@@ -166,7 +178,7 @@ int ParseGPGGA(char* Data, GPSDataType* DataOut)
   ParsedData = ReadSection(Data, &i, ',');
   free(ParsedData);
   
-  // check for HDOP
+  // check for HDP
   ParsedData = ReadSection(Data, &i, ',');
   (*DataOut).HDP = atof(ParsedData);
   free(ParsedData);
@@ -176,11 +188,12 @@ int ParseGPGGA(char* Data, GPSDataType* DataOut)
   (*DataOut).Alt = atof(ParsedData);
   free(ParsedData);
   
-  //M
+  // check for unit
   ParsedData = ReadSection(Data, &i, ',');
   //come back Meters Mesurements Feet vs Meters convert<--------
   if(*ParsedData == 'F') // convert to Meter
   {
+        //if in feet auto convert
   (*DataOut).Alt *= 3.28084;
   }
   free(ParsedData);
@@ -189,11 +202,12 @@ int ParseGPGGA(char* Data, GPSDataType* DataOut)
   ParsedData = ReadSection(Data, &i, ',');
   (*DataOut).GeoidalS = atof(ParsedData);
   free(ParsedData);
-  //M
+  // check for unit
   ParsedData = ReadSection(Data, &i, ',');
   //come back Alt Mesurements Feet vs Meters convert<--------
   if(*ParsedData == 'F') // convert to Meter
   {
+        //if in feet auto convert
   (*DataOut).GeoidalS *= 3.28084;
   }
   free(ParsedData);
@@ -206,14 +220,14 @@ int ParseGPGGA(char* Data, GPSDataType* DataOut)
   (*DataOut).StationID = atoi(ParsedData);
   free(ParsedData);
   
+  //get check sum and check
   ParsedData = ReadSection(Data, &i, '*');
   i = ParseHex(ParsedData);
   free(ParsedData);
-  
   if(i == (int)Check)
     return -2;           //bad data
                 
-  return 0;
+  return GPGGA;
 
 
 }
