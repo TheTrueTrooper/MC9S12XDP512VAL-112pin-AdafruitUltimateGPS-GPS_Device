@@ -15,7 +15,7 @@
 #include <hidef.h>
 #include "mc9s12xdp512.h"
 
-// an asm delay
+// an asm style dirty delay
 void Delay(word uSec);
 
 
