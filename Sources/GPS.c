@@ -14,15 +14,16 @@
 */
 #include "GPS.h"
 
-
+//Sets up every thing needed for the GPS device
 void GPSInIt(void)
 {
+   // set the register for data recived from SCI Serial interface 1 for 9600 baud
    SCI1BDH = 0x00; 
    SCI1BDL = 0x34;
-      
+   // set the register for data recived from SCI Serial interface 1 for 9600 baud
    SCI1DRL = 0x00;
    SCI1DRH = 0x34;
-
+   // set the register for data recived from SCI Serial interface 1 for 9600 baud
    SCI1CR1 = 0;
    SCI1CR2 = 0x0C;
        
@@ -33,64 +34,54 @@ void GPSInIt(void)
    lcdClear();
    lcdSetRowCol(0, 0);
    lcdString("Setting up GPS");
-   GPSSendCommand("PMTK251,9600"); //set buad to 9600
+   //set buad to 9600
+   GPSSendCommand("PMTK251,9600");
    Delay(400);
-   
-   // set thresh hold
-   /*lcdClear();
-   lcdSetRowCol(0, 0);
-   lcdString("Settting thresh hold");
-   GPSSendCommand("PMTK397,2"); // set thresh
-   Delay(1000);*/  
 
-   //turn off anten stat
-   GPSSendCommand("PGCMD,33,0"); //turn off anten status
-   Delay(200);
+   //turn off the anten status on strings
+   GPSSendCommand("PGCMD,33,0");
+   Delay(200); // delay a little between every command to allow GPS rec modual to cary out command.
    
-   //set GPS data grab hz
+   //set GPS data grab at speed
    GPSSendCommand("PMTK220,100"); //set hrz
    Delay(200);
    
-   //set sentence types
-   GPSSendCommand("PMTK314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"); //set son only gppa and 4 sats
+   //set sentence types for GPPA Data (Lat & Long) and to only listen to for satalites on a mininum data
+   GPSSendCommand("PMTK314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
    Delay(200);
    
    
-   /*//set Response rate
-   lcdClear();
-   for (OutSize = 0; OutSize < 20;OutSize++)
-    SringOut[OutSize] = '\0';
-   lcdSetRowCol(0, 0);
-   lcdString("Response rate");
-   GPSSendCommand("PMTK220,1000"); // set to out at a hert
-   (void)SCI1ReadString(SringOut, &OutSize);
-   lcdSetRowCol(1, 0);
-   lcdString(SringOut);
-   Delay(1000);*/
 }
-
+//Turns off GPS With GPIO pin attached at by rasing high
 void GPSEnable()
 {
     PORTA |= 0x04; // pin high is enabled
 }
-
+//Turns off GPS With GPIO pin attached at by cutting low
 void GPSDisable()
 {
     PORTA &= 0xFB; // pin low is disabled
 }
-
+//Sends a command for the GPS
 void GPSSendCommand(char* String)
 {
-byte i =0;
+  //start at start
+   byte i =0;
+  //ready a message memory location
    char* message = NULL;
+  //make a meessage from the string for the NMEA Protocol
    message = MakeNMEAMessage(String);
+  //while you still have values in a sting and not null terminated
     while(message[i] != 0x00 && message[i] != '\0')
     {
+      //wait while charater is still being sent
       while((SCI1SR1 & 0x80) == 0);
+      // after message is sent load next
       SCI1DRL = message[i]; 
+      //cont iterate
       i++; 
-    
     }
+    // after done free memory used internally while sending.
    free(message);
 }
 
@@ -99,37 +90,17 @@ byte i =0;
 
 void GPSGetSentence(char* SringOut, byte* OutSize)
 {
-     //SCI1SR1 &= 0x20;
+     //Set location to start of buffer
      byte i;
      for (i = 0; i < *OutSize - 1;i++)
-     {
-      
-      //SringOut[i] = '\0';
+     {  
+      //check to see if data has been recieved yet on register
       while((SCI1SR1 & 0x20) == 0);
+      //Load data when there
       SringOut[i] = SCI1DRL;
      }
-     SringOut[i] = '\0';
-     //SCI1ReadString(SringOut, outSize);
-     
-     ///*
-     /*i = 0;
-     
-     while(SringOut[i] != '$')
-     {
-      while((SCI1SR1 & 0x20) == 0);
-      SringOut[i] = SCI1DRL;
-     }
-     do
-     {
-      i++;
-      while((SCI1SR1 & 0x20) == 0);
-      SringOut[i] = SCI1DRL; 
-     }while(SringOut[i] != 0x00 && SringOut[i] != '\0');
-     i++;
-     SringOut[i] = '\0';
-     *OutSize = i;
-     */
-     
+     //end string just in case
+     SringOut[i] = '\0';    
      
 }
 
