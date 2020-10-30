@@ -1,3 +1,17 @@
+/*
+  Author: Angelo Sanches
+  Board:  mc9s12xdp512(nait)
+  Perpous: To Create and maintain a connection with the cellphone model
+  Created: ?  
+  
+  -------------UseLog-------------
+  ->last is template
+  Modified:<version:Date>
+  Reason:
+  ----------Change Log------------
+  ->last is template
+  Log:<Reason/Modified> Optional log Optional log in case of compliations
+*/
 #include "CELL.h"
 //Opens the cellphone models serial port and sets up for use.
 void CELLInIt(void)
