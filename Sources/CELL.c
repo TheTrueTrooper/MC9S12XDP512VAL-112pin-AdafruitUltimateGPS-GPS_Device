@@ -1,7 +1,8 @@
 #include "CELL.h"
-
+//Opens the cellphone models serial port and sets up for use.
 void CELLInIt(void)
 {
+   //Open SCI1 and set for a baud rate of 9600
    SCI1BDH = 0x00; 
    SCI1BDL = 0x34;
       
@@ -10,12 +11,14 @@ void CELLInIt(void)
 
    SCI1CR1 = 0;
    SCI1CR2 = 0x0C;
-     
+   
+   //Open direction for enable GPIO pin 60 for enabling cell model
    DDRA &= 0xF7; //set direction to out for pin 60
    DDRA |= 0xF0; //set direction in for 60 - 64
 
 }
 
+//Sends a Basic Command to the Cellphone
 void CELLSendCommand(char* String)
 {
    (void)SCI1SendString(String);
