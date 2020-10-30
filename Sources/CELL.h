@@ -3,7 +3,7 @@
   Board:  mc9s12xdp512(nait)
   Perpous: To Create and maintain a connection with the cellphone model
   Created: ?  
-  
+  Notes: Port is shared with the old Comport so they can not be used together. 
   -------------UseLog-------------
   ->last is template
   Modified:<version:Date>
