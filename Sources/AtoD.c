@@ -29,7 +29,7 @@ void ATD0InIt(void)
   Delay(1000);
 }
 
-//opens Anolog to Digital Port 0 
+//samples from open Anolog to Digital Port 0 
 unsigned int ATD0_Sample(void)
 {  
    //tell it to sample
