@@ -22,26 +22,26 @@
 enum DownCombos{
   //For the center switch 
   // -
-  //-.-
+  //-_-
   // -
     swCenter = 1,
   //For the center switch 
   // -
-  //--.
+  //--_
   // -
     swRight = 2,
   //For the center switch 
   // -
   //---
-  // .
+  // _
     swBottom = 4,
   //For the center switch 
   // -
-  //.--
+  //_--
   // -
     swLeft = 8,
   //For the center switch 
-  // .
+  // _
   //---
   // -
     swTop = 16
