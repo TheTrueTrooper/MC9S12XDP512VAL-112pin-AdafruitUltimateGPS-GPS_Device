@@ -3,14 +3,14 @@
 void CELLInIt(void)
 {
    //Open SCI1 and set for a baud rate of 9600
-   SCI2BDH = 0x00; 
-   SCI2BDL = 0x34;
+   SCI0BDH = 0x00; 
+   SCI0BDL = 0x34;
       
-   SCI2DRL = 0x00;
-   SCI2DRH = 0x34;
+   SCI0DRL = 0x00;
+   SCI0DRH = 0x34;
 
-   SCI2CR1 = 0;
-   SCI2CR2 = 0x0C;
+   SCI0CR1 = 0;
+   SCI0CR2 = 0x0C;
    
    //Open direction for enable GPIO pin 60 for enabling cell model
    DDRA &= 0xF7; //set direction to out for pin 60
@@ -21,7 +21,7 @@ void CELLInIt(void)
 //Sends a Basic Command to the Cellphone
 void CELLSendCommand(char* String)
 {
-   (void)SCI2SendString(String);
+   (void)SCI0SendString(String);
 }
 
 //Turns off and on cellphone model
@@ -84,7 +84,7 @@ void CELLGetHTTP(char* URL, int URLsize, char** Params, int* ParamSize, char** V
     CELLSendCommand(FullURL); // set url param
     CELLSendCommand("AT+HTTPACTION=0\r");  //Send it
     CELLSendCommand("AT+HTTPREAD\r");   //GetResponse
-    SCI2ReadString(Response, &ResponseSize); //listen to response
+    SCI0ReadString(Response, &ResponseSize); //listen to response
     //Clean up the string
     CELLSendCommand("AT+HTTPTERM\r"); // clean up cell
     // null termate the string
