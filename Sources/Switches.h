@@ -28,8 +28,10 @@ enum DownCombos{
 };
 
 
-//Sets up the swithches
-//void InItSwitch(void);
+//Creates a set of switches on the pins connected to buttons and attaches some pointer functions to them
+//inPointerDoDowns - Is a function to connect to the down of a button.
+//inPointerDoHeld - Is a function to connect to the holding down of a button.
+//inPointerDoUp - Is a function to connect to the down of a button.
 void InItSwitch(void(*inPointerDoDowns)(byte ButtonState), void(*inPointerDoHeld)(byte ButtonState), void(*inPointerDoUp)(byte ButtonState));
 
 void ButtonCheck(void);
