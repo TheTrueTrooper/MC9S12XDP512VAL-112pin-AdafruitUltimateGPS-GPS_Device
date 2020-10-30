@@ -19,9 +19,6 @@
 //the initializer
 void Seg7InIt(void);
 
-//
-void ChangeButtonDelay(byte nButtonTickDelay,byte nButtonTickTimer);
-
 
 //the Clears a position 
 //takes a positional byte how ever only 0-7 ar valid other bits will be tuncated
