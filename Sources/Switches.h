@@ -34,11 +34,11 @@ enum DownCombos{
 //inPointerDoUp - Is a function to connect to the down of a button.
 void InItSwitch(void(*inPointerDoDowns)(byte ButtonState), void(*inPointerDoHeld)(byte ButtonState), void(*inPointerDoUp)(byte ButtonState));
 
+
+// polls button states for changes and calls pointer functions for changes
 void ButtonCheck(void);
 
+// changes debounce delay and Hold down delay
+//nButtonTickDelay - is the delay on debounce
+//nButtonTickTimer - is the delay between hold down calls (Note debounce delay happens befor first) and button up calls
 void ChangeButtonDelays(word nButtonTickDelay,word nButtonTickTimer);
-
-
-
-
-
