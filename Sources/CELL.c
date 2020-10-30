@@ -3,14 +3,14 @@
 void CELLInIt(void)
 {
    //Open SCI1 and set for a baud rate of 9600
-   SCI1BDH = 0x00; 
-   SCI1BDL = 0x34;
+   SCI2BDH = 0x00; 
+   SCI2BDL = 0x34;
       
-   SCI1DRL = 0x00;
-   SCI1DRH = 0x34;
+   SCI2DRL = 0x00;
+   SCI2DRH = 0x34;
 
-   SCI1CR1 = 0;
-   SCI1CR2 = 0x0C;
+   SCI2CR1 = 0;
+   SCI2CR2 = 0x0C;
    
    //Open direction for enable GPIO pin 60 for enabling cell model
    DDRA &= 0xF7; //set direction to out for pin 60
@@ -21,20 +21,31 @@ void CELLInIt(void)
 //Sends a Basic Command to the Cellphone
 void CELLSendCommand(char* String)
 {
-   (void)SCI1SendString(String);
+   (void)SCI2SendString(String);
 }
 
+//Turns off and on cellphone model
 void CELLToggleOnOff()
 {
    PORTA |= 0x08; // set pin high to start on toggle  
-   Delay(2002);   // set for 2 sec
+   Delay(2002);   // Pulse activated for 2 seconds. so hold high for 2 seconds.
    PORTA &= 0xF7; // set pin low to finish toggle
 }
 
-void CELLGetHTTP(char* URL, int URLsize, char** Params, int* ParamSize, char** Value, int* ValueSize, char* Response, int ResponseSize, byte ParamsNum)
+//This Gets a the cellphone to make a http reqest.
+//URL is a string of the loction to make the request.
+//Param is a array of strings for the params that will be added to a http get request
+//ParamSize is an array of the chars in all the params in the array of strings (low level programming he)
+//Value is a array of strings for the params values that will be added to a http get request
+//ValueSize is an array of the chars in all the params values in the array of strings (low level programming he)
+//Response if for your reponse buffer to fill
+//
+void CELLGetHTTP(char* URL, int URLsize, char** Params, int* ParamSize, char** Value, int* ValueSize, char* Response, int& ResponseSize, byte ParamsNum)
 {
-//Huge string building exert
+    //Huge string building exert
+    //Set the set HTTP request target string start
     char* Command = "AT+HTTPPARA=\"URL\",\"";
+    //Create a space to create the full Set url string
     char* FullURL = NULL;
     int i;
     //capture the sizes to alot mem
@@ -45,14 +56,20 @@ void CELLGetHTTP(char* URL, int URLsize, char** Params, int* ParamSize, char** V
         ParamsSIZES += ValueSize[i];
         ParamsSIZES++; //for &
     }
-    //alot mem    
-    FullURL = (char*)malloc(ParamsSIZES + 3 + 20);  // for (& + \0 + \r ) + 18 for Command
+    //alot memory for tha  
+    FullURL = (char*)malloc(ParamsSIZES + 3 + 22);  // for (& + \0 + \r ) + 18 for Command
+    // set the start of the string to be used
     (void)strcat(FullURL, Command);// set command ith open dting for use
+    //Add the root URL
     (void)strcat(FullURL, URL);  //add url
-    (void)strcat(FullURL, "&"); //add param sep 
-    //add all params & values as stuff
+    //Add the url Params seperation marker as ?
+    (void)strcat(FullURL, "?"); //add param sep 
+    //add all params & values as to the get string from here
     for (i = 0; i < ParamsNum; i ++)    //\r
     {
+       //if we are on a another param add another param seperation marker as &
+      if(i > 0)
+         (void)strcat(FullURL, "&");
       (void)strcat(FullURL, Params[i]);
       (void)strcat(FullURL, "=");
       (void)strcat(FullURL, Value[i]);
@@ -62,11 +79,15 @@ void CELLGetHTTP(char* URL, int URLsize, char** Params, int* ParamSize, char** V
     (void)strcat(FullURL, "\0"); //end of string for us
     CELLSendCommand("AT+HTTPINIT\r"); //start sesh
     CELLSendCommand("AT+HTTPPARA=\"CID\",1\r");//confing cell for http 
+    //Send the full url for the request with params
     CELLSendCommand(FullURL); // set url param
     CELLSendCommand("AT+HTTPACTION=0\r");  //Send it
     CELLSendCommand("AT+HTTPREAD\r");   //GetResponse
-    SCI1ReadString(Response, &ResponseSize); //listen to response
+    SCI2ReadString(Response, &ResponseSize); //listen to response
+    //Clean up the string
     CELLSendCommand("AT+HTTPTERM\r"); // clean up cell
+    // null termate the string
+    FullURL[ParamsSIZES + 3 + 21] = '\0';
     free(FullURL); // clean up func
 }
 
