@@ -20,10 +20,30 @@
 
 // Button Enums add as needed for combos
 enum DownCombos{
+  //For the center switch 
+  // -
+  //-.-
+  // -
     swCenter = 1,
+  //For the center switch 
+  // -
+  //--.
+  // -
     swRight = 2,
+  //For the center switch 
+  // -
+  //---
+  // .
     swBottom = 4,
+  //For the center switch 
+  // -
+  //.--
+  // -
     swLeft = 8,
+  //For the center switch 
+  // .
+  //---
+  // -
     swTop = 16
 };
 
