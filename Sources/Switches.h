@@ -28,20 +28,14 @@ enum DownCombos{
 };
 
 
-//Sets up the swithches for use
+//Sets up the swithches
 //void InItSwitch(void);
-void InItSwitch(void(*inPointerDoDowns)(byte Debounce), void(*inPointerDoHeld)(byte Debounce), void(*inPointerDoUp)(byte Debounce));
+void InItSwitch(void(*inPointerDoDowns)(byte ButtonState), void(*inPointerDoHeld)(byte ButtonState), void(*inPointerDoUp)(byte ButtonState));
 
-//Checks the buttons once
 void ButtonCheck(void);
 
 void ChangeButtonDelays(word nButtonTickDelay,word nButtonTickTimer);
 
-//void DoDowns(byte DebounceResult);
-
-//void DoHeld(byte HeldResults);
-
-//void DoUp(byte UpResults);
 
 
 
