@@ -17,6 +17,8 @@
 #include "mc9s12xdp512.h"
 #include "DirtyDelays.h"
 
+//Opens Anolog to Digital Port 0 
 void ATD0InIt(void);
 
+//Samples from open Anolog to Digital Port 0 
 unsigned int ATD0_Sample(void);
