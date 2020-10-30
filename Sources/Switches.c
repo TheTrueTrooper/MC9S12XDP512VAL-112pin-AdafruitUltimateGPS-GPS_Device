@@ -16,26 +16,42 @@
 
 #include "Switches.h"
 
+//The time on a debounce
 word AngButtonTickDelay;
+//the Time on another hold command.
 word AngButtonTickTimer;
 
 // this vers will allow for funtions to hide in main
-void (*PointerDoDowns)(byte Debounce);
-void (*PointerDoHeld)(byte Debounce);
-void (*PointerDoUp)(byte Debounce);
+//A pointer function for if a button is pressed down with its down time showen
+void (*PointerDoDowns)(byte ButtonState);
+//A pointer function for if a button is held down with its down time showen
+void (*PointerDoHeld)(byte ButtonState);
+//A pointer function for if a button is let rise from the down postion with its down time showen
+void (*PointerDoUp)(byte ButtonState);
 
-void InItSwitch(void(*inPointerDoDowns)(byte Debounce), void(*inPointerDoHeld)(byte Debounce), void(*inPointerDoUp)(byte Debounce)) 
+//Creates a set of switches on the pins connected to buttons and attaches some pointer functions to them
+//inPointerDoDowns - Is a function to connect to the down of a button.
+//inPointerDoHeld - Is a function to connect to the holding down of a button.
+//inPointerDoUp - Is a function to connect to the down of a button.
+void InItSwitch(void(*inPointerDoDowns)(byte ButtonState), void(*inPointerDoHeld)(byte ButtonState), void(*inPointerDoUp)(byte ButtonState)) 
 {
+     // set the GPIOs for the buttons to be off
      PT1AD1 &= 0xE0;
+     // set the GPIOs for the buttons to be ins open
      DDR1AD1 &= 0xE0; // set outs
+     // set the GPIOs for the buttons on
      ATD1DIEN1 |= 0x1F;
+      //sett a button to delay a tick on a debounce to this many seconds
      AngButtonTickDelay = 300;
+     // set other following ticks on a held down to the following
      AngButtonTickTimer = 200;
+     //Bind the buttons
      PointerDoDowns = inPointerDoDowns;
      PointerDoHeld = inPointerDoHeld;
      PointerDoUp = inPointerDoUp;
 }
 
+//Changes a delays on buttons
 void ChangeButtonDelays(word nButtonTickDelay,word nButtonTickTimer)
 {
      AngButtonTickDelay =  nButtonTickDelay;
@@ -43,25 +59,31 @@ void ChangeButtonDelays(word nButtonTickDelay,word nButtonTickTimer)
 }
 
 
-// the switch checker
+// polls button states for changes and calls pointer functions for changes
 void ButtonCheck(void) 
 {
+     //The current debounce time
      byte Debounce;  
+     //If a button has been pressed then
      if ((PT1AD1 & 0x1F) > 0) 
      {
-      
-        Debounce = PT1AD1 & 0x1F;
-
-         if ((PT1AD1 & 0x1F) == Debounce)
+        //Check for debounce with getting state
+        DebounceButtonState = PT1AD1 & 0x1F;
+        //wait for debounce time and then check to make sure it was debounced
+        Delay(AngButtonTickDelay);
+         if ((PT1AD1 & 0x1F) == DebounceButtonState)
          {
-             Delay(AngButtonTickDelay);
-             (*PointerDoDowns)(Debounce);
+             //If successed do button down event as a pointer function call
+             (*PointerDoDowns)(DebounceButtonState);
+             //Wait for hold timer then begin hold check
              Delay(AngButtonTickTimer);
-             while(Debounce == (PT1AD1 & 0x1F))
+             while(DebounceButtonState == (PT1AD1 & 0x1F))
              {
-                (*PointerDoHeld)(Debounce);
+                //do Event Button for held down if held down and repeate
+                (*PointerDoHeld)(DebounceButtonState);
                 Delay(AngButtonTickTimer); 
              }
+            //on up do up event at end
              (*PointerDoUp)(Debounce);
          }
      } 
