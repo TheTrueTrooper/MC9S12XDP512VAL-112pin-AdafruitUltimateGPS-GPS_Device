@@ -3,7 +3,7 @@
   Board:  mc9s12xdp512(nait)
   Perpous: SCI (Com) Header
   Created: 3/11/16 
-  
+  Notes: Port is shared with the New cellphone model so they can not be used together. 
   -------------UseLog-------------
   ->last is template
   Modified:<version:Date>
